@@ -2,7 +2,7 @@
 
 import Phone from '@/components/Phone'
 import { Button } from '@/components/ui/button'
-import { BASE_PRICE, PRODUCT_PRICES } from '@/config/products'
+import { PRODUCT_PRICES } from '@/config/products'
 import { cn, formatPrice } from '@/lib/utils'
 import { COLORS, FINISHES, MODELS } from '@/validators/option-validator'
 import { Configuration } from '@prisma/client'
@@ -34,9 +34,11 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
     ({ value }) => value === model
   )!
 
-  let totalPrice = BASE_PRICE
+  let totalPrice = 0
   if (material === 'polycarbonate')
     totalPrice += PRODUCT_PRICES.material.polycarbonate
+  if (material === 'silicone')
+    totalPrice += PRODUCT_PRICES.material.silicone
   if (finish === 'textured') totalPrice += PRODUCT_PRICES.finish.textured
 
   const { mutate: createPaymentSession } = useMutation({
@@ -120,37 +122,42 @@ const DesignPreview = ({ configuration }: { configuration: Configuration }) => {
           <div className='mt-8'>
             <div className='bg-gray-50 p-6 sm:rounded-lg sm:p-8'>
               <div className='flow-root text-sm'>
-                <div className='flex items-center justify-between py-1 mt-2'>
-                  <p className='text-gray-600'>Base price</p>
-                  <p className='font-medium text-gray-900'>
-                    {formatPrice(BASE_PRICE / 100)}
-                  </p>
-                </div>
 
+              {material === 'polycarbonate' ? (
+                  <div className='flex items-center justify-between py-1 mt-2'>
+                    <p className='text-gray-600'>Soft polycarbonate material</p>
+                    <p className='font-medium text-gray-900'>
+                      {formatPrice(PRODUCT_PRICES.material.polycarbonate)}
+                    </p>
+                  </div>
+                ) : null}
+
+                {material === 'silicone' ? (
+                  <div className='flex items-center justify-between py-1 mt-2'>
+                    <p className='text-gray-600'>Silicone material</p>
+                    <p className='font-medium text-gray-900'>
+                      {formatPrice(PRODUCT_PRICES.material.silicone)}
+                    </p>
+                  </div>
+                ) : null}
+                
                 {finish === 'textured' ? (
                   <div className='flex items-center justify-between py-1 mt-2'>
                     <p className='text-gray-600'>Textured finish</p>
                     <p className='font-medium text-gray-900'>
-                      {formatPrice(PRODUCT_PRICES.finish.textured / 100)}
+                      {formatPrice(PRODUCT_PRICES.finish.textured)}
                     </p>
                   </div>
                 ) : null}
 
-                {material === 'polycarbonate' ? (
-                  <div className='flex items-center justify-between py-1 mt-2'>
-                    <p className='text-gray-600'>Soft polycarbonate material</p>
-                    <p className='font-medium text-gray-900'>
-                      {formatPrice(PRODUCT_PRICES.material.polycarbonate / 100)}
-                    </p>
-                  </div>
-                ) : null}
+                
 
                 <div className='my-2 h-px bg-gray-200' />
 
                 <div className='flex items-center justify-between py-2'>
                   <p className='font-semibold text-gray-900'>Order total</p>
                   <p className='font-semibold text-gray-900'>
-                    {formatPrice(totalPrice / 100)}
+                    {formatPrice(totalPrice)}
                   </p>
                 </div>
               </div>
